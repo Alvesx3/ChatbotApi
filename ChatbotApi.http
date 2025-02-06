@@ -1,0 +1,5 @@
+@ChatbotApi_HostAddress = http://localhost:5037
+
+### Buscar os 5 repositórios mais antigos de C#
+GET {{ChatbotApi_HostAddress}}/api/github/repos
+Accept: application/json
