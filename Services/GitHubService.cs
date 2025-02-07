@@ -1,9 +1,5 @@
-﻿using System.Net.Http;
+﻿using ChatbotApi.Models;
 using System.Text.Json;
-using System.Threading.Tasks;
-using System.Linq;
-using System.Collections.Generic;
-using ChatbotApi.Models;
 
 namespace ChatbotApi.Services
 {
@@ -21,20 +17,22 @@ namespace ChatbotApi.Services
 
         public async Task<List<object>> GetOldestCSharpRepositoriesAsync()
         {
-            var response = await _httpClient.GetStringAsync(GitHubApiUrl);
-            var repositories = JsonSerializer.Deserialize<List<GitHubRepository>>(response);
+            string response = await _httpClient.GetStringAsync(GitHubApiUrl);
+            List<GitHubRepository>? repositories = JsonSerializer.Deserialize<List<GitHubRepository>>(response);
 
-            if (repositories == null) return new List<object>();
+            if (repositories == null)
+            {
+                return new List<object>();
+            }
 
-            var csharpRepos = repositories
+            List<object> csharpRepos = repositories
                 .Where(r => r.Language != null && r.Language.Equals("C#", StringComparison.OrdinalIgnoreCase)) // Garante que seja C#
-                .OrderBy(r => r.CreatedAt)  // Ordena do mais antigo para o mais novo
-                .Take(5)  // Pega apenas os 5 mais antigos
+                .OrderBy(r => r.CreatedAt)
+                .Take(5)
                 .Select(r => new
                 {
                     Name = r.FullName,
                     Description = r.Description ?? "Sem descrição",
-                    Url = r.Url,
                     AvatarUrl = BlipAvatarUrl
                 })
                 .ToList<object>();
